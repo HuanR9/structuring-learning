@@ -1,9 +1,10 @@
 ---
 domain: "<领域slug>"
 module: "<模块slug>"
-status: learning
+status: planned
 created: "YYYY-MM-DD"
-review_due: "YYYY-MM-DD"
+review_due: null
+review_stage: 1
 ---
 
 # <模块名>

@@ -35,4 +35,5 @@ cat > "$TARGET/review-log.md" <<EOF
 EOF
 
 echo "已初始化: $TARGET"
+echo "请先填写 profile.md 与 roadmap.md 中的占位信息，再运行 validate_structure.py。"
 find "$TARGET" -type f | sort

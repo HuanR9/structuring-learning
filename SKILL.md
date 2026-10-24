@@ -1,12 +1,11 @@
 ---
 name: structuring-learning
 description: 系统性学习建模助手。当用户想系统性学习某个业务领域时使用，触发词包括"系统性学习""学习路线""知识框架""知识体系""帮我学X""入门X""从零开始学X""提升X能力"，以及领域词（运维、DBA、数据库、MySQL、研发、产品、设计、法律等）叠加学习意图。负责把模糊的学习需求变成结构化的知识体系（知识树/学习路径/笔记骨架），支持跨会话续学与复盘迭代。不用于一次性事实问答、完整课程讲义生成、测验打分。Use when the user wants a structured or systematic learning plan for a business domain (structured learning, learning roadmap, knowledge framework, curriculum design).
-agent_created: true
 ---
 
 # structuring-learning
 
-> 版本 v2026.10.22 ｜ 定位：学习链路的"建模层"——把"我要学 X"变成结构良好、可续学、可沉淀的知识体系。
+> 版本 v2026.10.25 ｜ 定位：学习链路的"建模层"——把"我要学 X"变成结构良好、可续学、可沉淀的知识体系。
 
 ## ⛔ 硬规则（先读这里）
 
@@ -29,7 +28,7 @@ agent_created: true
 | 触发词（叠加学习意图即命中） | 领域 | 模块入口 | 状态 |
 |---|---|---|---|
 | 运维、DBA、数据库、MySQL、SRE、Linux、网络、K8s、容器 | 运维类 | `references/domains/ops/_index.md` | ✅ 首期 |
-| 研发、编程、后端、前端、架构、Java、Go、Python | 研发类 | `references/domains/dev/_index.md` | ✅ 二期 |
+| 研发、编程、后端、前端、架构、Java、Go、Python、CI/CD、应用流水线 | 研发类 | `references/domains/dev/_index.md` | ✅ 二期 |
 | 产品、产品经理、需求分析、PRD、原型 | 产品类 | `references/domains/product/_index.md` | ✅ 二期 |
 | 设计、UI、UX、交互、视觉 | 设计类 | `references/domains/design/_index.md` | ✅ 二期 |
 | 法律、合规、法务、合同 | 法律类 | `references/domains/legal/_index.md` | ✅ 二期 |
@@ -41,6 +40,8 @@ agent_created: true
 
 命中 L1 后加载领域入口文件，按其中的细分路由表定位具体细分模块（如运维类 → DBA / SRE / 网络）。
 
+- 路由优先级：用户明确指定的领域/细分优先；未指定时根据目标能力和模块边界选择最直接相关的模块。若多个模块都命中且选择会实质改变路线、又无法从目标判断，提出一个聚焦问题；默认不加载或展开所有候选模块。
+
 ## 通用流程（六阶段）
 
 ```
@@ -51,9 +52,9 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 
 | 阶段 | 干什么 | 产出（写入状态目录） | 详细规则 |
 |---|---|---|---|
-| P0 锚定 | 问清目标层级、现有基础、时间预算、材料约束 | `profile.md` | `references/core/workflow.md` |
-| P1 调研 | 信源分级检索、交叉验证、骨架候选 | 记入 `research-notes.md` | `references/core/workflow.md` |
-| P2 建模 | 选结构模式，生成知识树/网/链（阻塞项：未经用户确认不得进入 P3） | `knowledge-map.md` | `references/core/modeling.md` |
+| P0 锚定 | 确认领域与预期能力；基础可标注假设，时间预算和材料约束按需确认 | `profile.md` | `references/core/workflow.md` |
+| P1 调研 | 按时效、风险和陌生度决定核查深度，形成骨架候选 | 必要时记入 `research-notes.md` | `references/core/workflow.md` |
+| P2 建模 | 选择结构并生成草案；默认等用户确认后进入 P3，用户明确授权端到端产出时可继续 | `knowledge-map.md` | `references/core/modeling.md` |
 | P3 路径 | 节点排序、依赖标注、里程碑与检查点 | `roadmap.md` | `references/core/workflow.md` |
 | P4 笔记 | 按模块生成结构化笔记骨架，学习中逐模块填充 | `notes/` | `references/core/notes.md` |
 | P5 复盘 | 间隔复习提醒、薄弱点标记、结构回写 | `review-log.md` | `references/core/review.md` |
@@ -63,17 +64,20 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 | 场景 | 必须加载 |
 |---|---|
 | 任何状态文件读写、续学恢复 | `references/core/state-schema.md` |
+| 迁移旧学习目录 | `references/core/state-schema.md` + `references/core/migration-v1.md` |
 | 新领域启动（P0/P1） | `references/core/workflow.md` + 领域模块文件 |
+| P1 调研记录 | `references/core/workflow.md` + `templates/research-notes.md` |
 | 建模或结构调整（P2） | `references/core/modeling.md` + 领域模块的"预设知识骨架" |
 | 生成/填充笔记（P4） | `references/core/notes.md` + `templates/note-module.md` |
 | 复盘、复习提醒（P5） | `references/core/review.md` |
 | 模板使用 | `templates/` 下对应文件 |
-| 初始化学习目录 / 校验产出物 | `scripts/init_domain.sh` / `scripts/validate_structure.py` |
+| 初始化学习目录 / 校验学习状态 / 校验领域模块 | `scripts/init_domain.sh` / `scripts/validate_structure.py` / `scripts/validate_skill.py` |
 
 ## 辅助脚本
 
 - `scripts/init_domain.sh <slug> [根目录]`：初始化 `./learning/<slug>/` 骨架（profile/roadmap/knowledge-map/review-log + notes/），已有目录拒绝覆盖。
-- `scripts/validate_structure.py <learning目录>`：校验产出物结构（必需文件、schema_version、状态枚举合法性），退出码 0=通过。
+- `scripts/validate_structure.py <learning目录>`：校验学习状态（必需字段、schema_version、路线依赖、笔记链接与状态一致性）。
+- `scripts/validate_skill.py [项目根目录]`：校验 L1/L2 路由目标、领域模块六节结构和知识骨架叶子能力证据；内容质量提醒为警告，退出码 1 表示结构错误。
 - 脚本只是辅助：缺脚本不影响流程，模板可复制 `templates/` 手工落地。
 
 ## 状态与产出约定
@@ -81,15 +85,16 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 - **[MUST]** 状态目录默认为当前工作区 `./learning/<领域slug>/`（slug 规则见 `state-schema.md`），例如 `./learning/ops-dba/`。
 - 每个领域目录自包含全部状态，新会话读取 `profile.md` + `roadmap.md` 即可恢复进度。
 - 产出全部为纯 Markdown，兼容 Obsidian（支持直接复制或软链进笔记库）。
-- 所有状态文件带 `schema_version`，读写规则与迁移见 `references/core/state-schema.md`。
+- `profile.md` 与 `roadmap.md` 带 `schema_version`；其他状态文件按各自模板定义。读写规则与迁移见 `references/core/state-schema.md`。
 
 ## 扩展机制（新增领域/细分）
 
-新增一个领域模块 [MUST] 只做三件事，不得改动核心层与其他领域：
+新增一个领域模块 [MUST] 按以下步骤完成，不得顺手改动无关领域：
 
 1. 在 `references/domains/` 下新建 `<领域>/` 目录，含 `_index.md`（细分路由）和各细分模块文件；
 2. 细分模块遵循统一六节 Schema（见 `references/domains/ops/dba.md` 的节结构）：领域画像 / 细分路由 / 预设知识骨架 / 权威信源清单 / 进阶检查点 / 常见误区；
 3. 在本文件 L1 路由表加一行，状态从 🔜 改为 ✅。
+4. 运行 `scripts/validate_skill.py` 检查路由引用和模块结构；修复结构错误，并逐条处理掌握证据警告。
 
 ## 边界（不做什么）
 

@@ -5,6 +5,7 @@ subdomain: "<细分>"
 goal_level: "<aware|usable|master>"
 baseline: "<现有基础一句话>"
 time_budget: "<每周可投入时长>"
+jurisdiction: "<仅法律/监管等相关主题填写；不适用则写不适用>"
 created: "YYYY-MM-DD"
 updated: "YYYY-MM-DD"
 ---

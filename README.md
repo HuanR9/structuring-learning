@@ -7,10 +7,11 @@
 ## 核心特性
 
 - **领域模块化路由**：触发词 → L1 业务领域（运维/研发/产品/设计/法律）→ L2 细分方向，每域独立维护、独立触发
-- **预置知识骨架**：22 个细分模块各带一棵 4–6 层预设知识树，叶子节点全部标注"掌握证据"（会做什么算过关），不从零起步
+- **预置知识骨架**：22 个细分模块各带预设知识骨架，叶子节点标注可观察的能力证据（如何判断掌握），不从零起步
 - **分级信源清单**：每个模块配权威信源（官方文档 > 经典书籍 > 优质社区）
 - **六阶段流水线**：锚定 → 调研 → 建模 → 路径 → 笔记 → 复盘，复盘结果可回写修正知识结构（迭代闭环）
 - **可续学状态**：每个学习领域一套自包含状态文件（档案/知识地图/路径/笔记），schema 版本化，新会话读档案即恢复进度
+- **目标能力驱动**：按用户希望完成的任务和前置依赖裁剪内容，不把树的层级直接当作能力等级
 - **序号化笔记**：`notes/<两位序号>-<slug>.md`，序号取自学习路径表，目录顺序即学习顺序
 
 ## 覆盖领域
@@ -36,13 +37,15 @@ structuring-learning/
 │   │   ├── modeling.md             #   建模方法论（树/网/链模式选择）
 │   │   ├── notes.md                #   结构化笔记规范（Obsidian 兼容）
 │   │   ├── review.md               #   间隔复习与复盘回写规则
-│   │   └── state-schema.md         #   状态文件 schema 与版本号
+│   │   ├── state-schema.md         #   状态文件 schema 与版本号
+│   │   └── migration-v1.md         #   旧学习目录迁移说明
 │   └── domains/                    # 领域模块注册处
 │       ├── ops/  dev/  product/  design/  legal/
-├── templates/                      # 产出物模板（档案/知识地图/路径/模块笔记）
+├── templates/                      # 产出物模板（档案/调研记录/知识地图/路径/模块笔记）
 └── scripts/
     ├── init_domain.sh              # 初始化一个学习领域目录骨架
     ├── validate_structure.py       # 校验产出物结构完整性
+    ├── validate_skill.py           # 校验领域路由、模块结构与掌握证据
     └── sync-to-workbuddy.sh        # 本仓库 → WorkBuddy 工具内目录同步
 ```
 
@@ -54,11 +57,15 @@ structuring-learning/
 # 方式一：从 GitHub 克隆后同步
 git clone https://github.com/HuanR9/structuring-learning.git
 cp -r structuring-learning ~/.workbuddy/skills/
-# 或使用同步脚本：./scripts/sync-to-workbuddy.sh
+# 或先预览同步差异，再明确执行：
+./scripts/sync-to-workbuddy.sh
+./scripts/sync-to-workbuddy.sh --apply
 
 # 方式二：直接 clone 到用户级 skills 目录
 git clone https://github.com/HuanR9/structuring-learning.git ~/.workbuddy/skills/structuring-learning
 ```
+
+`--apply` 默认保留目标目录中本仓库没有的文件并保护 `learning/`；只有明确要清理目标独有文件时才加 `--prune`。
 
 **其他 Agent**（Claude Code 等，SKILL.md 格式通用）：将整个目录放入对应工具的 skills 目录即可。
 
@@ -70,19 +77,21 @@ git clone https://github.com/HuanR9/structuring-learning.git ~/.workbuddy/skills
 - "我想系统学 SRE，有 3 年 Linux 经验"
 - "带我做一套 UI/UX 的知识框架"
 
-Skill 会先进入 P0 锚定（问清目标/基础/时间预算），再按领域模块生成结构。
+Skill 会先确认领域与预期能力，再结合基础生成结构；时间预算仅在需要估算排期时追问。
 
 ## 设计理念
 
-1. **结构化优先于内容堆砌**：知识的组织形式（树/网/链）决定学习效率，先建模再填充
+1. **结构化优先于内容堆砌**：知识的组织形式（树/网/链）影响学习与复用，先建模再填充
 2. **掌握证据驱动**：每个叶子节点必须回答"会做什么算过关"，拒绝"学过了"的虚假进度
 3. **单一事实来源**：学习路径表是序号的唯一来源，笔记文件名、进度状态全部由它派生
 4. **复盘闭环**：复习中发现的薄弱点与结构缺陷，回写修正知识树，结构随学习演进
-5. **领域可扩展**：新增领域 = 一个模块文件 + 路由表一行，不动核心层
+5. **领域可扩展**：新增细分 = 领域入口中的路由项 + 细分模块；新增领域还需新增入口文件并登记到 L1 路由，不因此改动无关核心规则
 
 ## 版本
 
-当前版本 **v2026.10.22**（版本规则：v+日期）
+当前版本 **v2026.10.25**（版本规则：v+日期）
+
+`validate_skill.py` 的掌握证据检查基于叶子节点文本特征，只能发现明显缺项；通过不代表证据具体、充分或已获领域专家确认。
 
 ## License
 

@@ -18,25 +18,25 @@
 容器与云原生
 ├── L1 容器基础
 │   ├── Docker 核心机制（镜像分层/容器运行时/仓库，能解释一条 Dockerfile 指令的影响）
-│   ├── 镜像制作最佳实践（多阶段构建、层缓存、瘦身与安全扫描）
-│   └── 容器网络与存储（bridge/overlay、volume 挂载语义）
+│   ├── 镜像制作最佳实践（多阶段构建、层缓存、瘦身与安全扫描；能构建一个多阶段、非 root 的示例镜像，比较体积/层缓存并记录扫描结果与修复项）
+│   └── 容器网络与存储（bridge/overlay、volume 挂载语义；能在隔离环境验证容器网络连通和持久卷挂载，提交拓扑图、数据持久性测试及清理步骤）
 ├── L2 K8s 核心概念
 │   ├── 集群架构（Master/Node/各组件职责，能画架构图）
-│   ├── 工作负载（Pod/Deployment/StatefulSet/DaemonSet 选型）
+│   ├── 工作负载（Pod/Deployment/StatefulSet/DaemonSet 选型；能针对无状态、有状态和节点级任务比较 Kubernetes 工作负载类型，提交可验证的最小清单）
 │   ├── 服务发现与网络（Service/Ingress/CoreDNS，能说清一次集群内访问的路径）
-│   └── 配置与存储（ConfigMap/Secret/PV/PVC，Secret 的安全边界）
+│   └── 配置与存储（ConfigMap/Secret/PV/PVC，Secret 的安全边界；能演示配置更新和 Secret 挂载路径，说明权限、加密和泄露面并验证资源清理）
 ├── L3 K8s 运维
-│   ├── 调度与资源（requests/limits、QoS、亲和与污点）
-│   ├── 发布策略（滚动/蓝绿/金丝雀的实现与回滚）
-│   └── 排障（CrashLoopBackOff/Pending/OOMKilled/ImagePullBackOff 的定位套路）
+│   ├── 调度与资源（requests/limits、QoS、亲和与污点；能为样例工作负载设置 requests/limits 与调度约束，观察 QoS/调度结果并解释资源冲突）
+│   ├── 发布策略（滚动/蓝绿/金丝雀的实现与回滚；能按服务约束选择一种策略，在测试环境演练发布与回滚并记录观测信号）
+│   └── 排障（CrashLoopBackOff/Pending/OOMKilled/ImagePullBackOff 的定位套路；能在隔离集群复现一种常见 Pod 故障，按事件、日志和配置建立证据链并验证修复）
 ├── L4 可观测与治理
-│   ├── 监控（Prometheus Operator 与核心指标）
-│   ├── 日志与事件（采集方案、Events 解读）
-│   └── Helm 与 Operator（包管理、声明式运维认知）
+│   ├── 监控（Prometheus Operator 与核心指标；能为集群关键对象制作一组指标查询和告警规则，用模拟异常验证触发及误报边界）
+│   ├── 日志与事件（采集方案、Events 解读；能从样例 Events 与容器日志还原一次故障时间线，说明采集缺口与保留成本）
+│   └── Helm 与 Operator（包管理、声明式运维认知；能编写或调整一个 Helm chart 并在测试集群安装、升级、回滚，说明何时需要 Operator）
 └── L5 CI/CD 与生态（可选分支）
-    ├── 流水线与 GitOps（ArgoCD/Flux 的拉模式）
-    ├── 服务网格认知（Istio 的能力与代价边界）
-    └── Serverless 认知（适用场景与冷启动代价）
+    ├── 流水线与 GitOps（ArgoCD/Flux 的拉模式；能用测试仓库演示一次声明式变更、同步、漂移发现和回滚，提交审计链路）
+    ├── 服务网格认知（Istio 的能力与代价边界；能针对一个服务通信问题比较引入服务网格与应用侧方案，列出控制面、资源和排障成本）
+    └── Serverless 认知（适用场景与冷启动代价；能用给定负载估算一次 Serverless 方案的成本和冷启动影响，列出适用边界与回退方案）
 ```
 
 ## ④ 权威信源清单

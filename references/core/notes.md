@@ -19,12 +19,12 @@
 
 ## Obsidian 兼容约定
 
-- 每个笔记文件带 YAML frontmatter：`domain`（领域）、`module`（模块）、`status`（learning/done/review）、`created`、`review_due`（下次复习日期）。
+- 每个笔记文件带 YAML frontmatter：`domain`（领域）、`module`（模块）、`status`（planned/learning/done/review/mastered）、`created`、`review_due`（下次复习日期或 `null`）。新生成的空骨架为 `planned`；开始学习时改为 `learning`。复习状态字段见 `references/core/review.md`。
 - 标签规范：`#learning/<领域>/<层>`，如 `#learning/dba/L2`。
 - 双链优先链向同领域笔记；跨领域链接需在笔记末尾"关联"节说明原因。
 
 ## 填充节奏
 
-- 学习新模块前先打开骨架，带着"自测"问题学。
+- 学习新模块前先打开骨架，带着"自测"问题学；开始时将笔记 `status` 从 `planned` 改为 `learning`，并将路线表状态从 `🔲` 改为 `🔵`。
 - 学完立即填充"是什么/为什么/怎么做"三节；"坑与误区"允许后续遇到再补。
 - 填充完成且自测通过后，将 frontmatter `status` 改为 `done`，并更新 `roadmap.md`。
