@@ -2,11 +2,12 @@
 
 > 学习链路的"建模层"——把"我要学 X"变成结构良好、可续学、可沉淀的知识体系。
 
-一个遵循开放 [Agent Skills](https://agentskills.io/specification) 规范的 AI Agent 技能：当你说"帮我系统性学习 X"时，它不会直接扔给你一份课程，而是先带你完成**知识结构建模**——产出知识树、学习路径、结构化笔记与复盘机制，全部落为纯 Markdown，可直接进 Obsidian 等知识库长期维护。
+一个遵循开放 [Agent Skills](https://agentskills.io/specification) 规范的 AI Agent 技能：当你想胜任目标岗位、提升工作能力或系统学习某个领域时，它会先帮你完成**知识结构建模**，再生成可裁剪、可续学的知识地图、学习路径、结构化笔记与复盘机制，全部落为纯 Markdown，可直接进 Obsidian 等知识库长期维护。
 
 ## 核心特性
 
-- **领域模块化路由**：触发词 → L1 专业领域或行业领域 → L2 细分方向，每域独立维护、独立触发
+- **岗位目标优先**：可从目标岗位、工作任务或专业领域进入；岗位路线组合现有模块，行业作为业务情境补充
+- **领域模块化路由**：专业领域 → 细分方向，每个模块独立维护，可供不同岗位路线复用
 - **预置知识骨架**：34 个细分模块各带预设知识骨架，叶子节点标注可观察的能力证据（如何判断掌握），不从零起步
 - **分级信源清单**：每个模块配权威信源（官方文档 > 经典书籍 > 优质社区）
 - **六阶段流水线**：锚定 → 调研 → 建模 → 路径 → 笔记 → 复盘，复盘结果可回写修正知识结构（迭代闭环）
@@ -39,84 +40,27 @@ structuring-learning/
 ├── references/
 │   ├── core/                       # 领域无关的通用方法论（所有模块共用）
 │   │   ├── workflow.md             #   六阶段流程
+│   │   ├── role-routing.md         #   岗位目标到专业模块的组合路由
 │   │   ├── modeling.md             #   建模方法论（树/网/链模式选择）
 │   │   ├── notes.md                #   结构化笔记规范（Obsidian 兼容）
 │   │   ├── review.md               #   间隔复习与复盘回写规则
 │   │   ├── state-schema.md         #   状态文件 schema 与版本号
 │   │   └── migration-v1.md         #   旧学习目录迁移说明
-│   └── domains/                    # 领域模块注册处
-│       ├── ops/  security/  dev/  education/  marketing-sales/  finance/  people/
-│       ├── product/  design/  legal/
+│   ├── domains/                    # 领域模块注册处
+│   │   ├── ops/  security/  dev/  education/  marketing-sales/  finance/  people/
+│   │   └── product/  design/  legal/
+│   └── industries/                 # 可叠加到岗位/任务路线的行业情境
+│       ├── _index.md               #   行业情境路由与维护边界
+│       └── manufacturing.md        #   制造业生产数据分析试点
+├── docs/evals/                     # 静态路由验收案例
+│   └── role-routing.md
 ├── templates/                      # 产出物模板（档案/调研记录/知识地图/路径/模块笔记）
 └── scripts/
     ├── init_domain.sh              # 初始化一个学习领域目录骨架
     ├── validate_structure.py       # 校验产出物结构完整性
-    ├── validate_skill.py           # 校验领域路由、模块结构与掌握证据
+    ├── validate_skill.py           # 校验岗位/领域/行业路由、静态案例、模块结构与掌握证据
     └── sync-to-workbuddy.sh        # 本仓库 → WorkBuddy 工具内目录同步
 ```
-
-## 安装
-
-本项目的 `SKILL.md` 和配套 `references/`、`scripts/`、`templates/` 遵循 Agent Skills 的目录约定。Agent 是否能使用它，还取决于该 Agent 是否支持此规范，以及它从哪里发现技能：**格式可复用，安装目录和自动发现能力由各工具决定**。对未列出的 Agent，请查阅其官方文档，将完整目录放到它支持的 skills 位置；不能仅凭存在 `SKILL.md` 就假设工具会自动加载。
-
-以下是已提供 Agent Skills 支持的工具的常用安装位置。把仓库完整克隆到目标目录后，`SKILL.md` 应直接位于 `structuring-learning/` 下。
-
-| Agent | 用户级安装位置 | 项目级安装位置 | 官方说明 |
-|---|---|---|---|
-| Codex | `~/.agents/skills/structuring-learning/` | `<项目>/.agents/skills/structuring-learning/` | [Codex Skills](https://developers.openai.com/codex/skills) |
-| Claude Code | `~/.claude/skills/structuring-learning/` | `<项目>/.claude/skills/structuring-learning/` | [Claude Code Skills](https://code.claude.com/docs/en/skills) |
-| Gemini CLI | `~/.agents/skills/structuring-learning/`（也支持 `~/.gemini/skills/`） | `<项目>/.agents/skills/structuring-learning/`（也支持 `.gemini/skills/`） | [Gemini CLI Agent Skills](https://geminicli.com/docs/cli/skills/) |
-
-例如，在 macOS/Linux 上安装到 Codex 和 Gemini CLI 共用的用户级目录：
-
-```bash
-mkdir -p ~/.agents/skills
-git clone https://github.com/HuanR9/structuring-learning.git \
-  ~/.agents/skills/structuring-learning
-```
-
-安装到 Claude Code 用户级目录：
-
-```bash
-mkdir -p ~/.claude/skills
-git clone https://github.com/HuanR9/structuring-learning.git \
-  ~/.claude/skills/structuring-learning
-```
-
-项目级安装适合团队共享并纳入版本控制。在目标项目根目录执行对应命令：
-
-```bash
-# Codex 或 Gemini CLI
-mkdir -p .agents/skills
-git clone https://github.com/HuanR9/structuring-learning.git \
-  .agents/skills/structuring-learning
-
-# Claude Code
-mkdir -p .claude/skills
-git clone https://github.com/HuanR9/structuring-learning.git \
-  .claude/skills/structuring-learning
-```
-
-更新时进入技能目录运行 `git pull`。工具通常会自动发现或在新会话加载技能；若未出现，请按对应工具文档检查目录并重启会话。
-
-### WorkBuddy
-
-WorkBuddy 使用自己的用户级目录，可直接克隆：
-
-```bash
-mkdir -p ~/.workbuddy/skills
-git clone https://github.com/HuanR9/structuring-learning.git \
-  ~/.workbuddy/skills/structuring-learning
-```
-
-如果已将仓库克隆到其他位置，也可以使用仓库内的同步脚本：先预览差异，再明确应用：
-
-```bash
-./scripts/sync-to-workbuddy.sh
-./scripts/sync-to-workbuddy.sh --apply
-```
-
-`--apply` 默认保留目标目录中本仓库没有的文件并保护 `learning/`；只有明确要清理目标独有文件时才加 `--prune`。
 
 ## 使用方式
 
@@ -126,7 +70,16 @@ git clone https://github.com/HuanR9/structuring-learning.git \
 - "我想系统学 SRE，有 3 年 Linux 经验"
 - "带我做一套 UI/UX 的知识框架"
 
-Skill 会先确认领域与预期能力，再结合基础生成结构；时间预算仅在需要估算排期时追问。
+Skill 会先确认岗位、工作任务或领域目标与预期能力，再结合现有基础建模；行业、职级和时间预算仅在会改变路线时追问。
+
+也可以从岗位目标或具体工作任务开始，例如：
+
+- "我准备转 SRE，做过 Linux 运维，想能独立处理线上故障"
+- "我刚成为招聘专员，想提升结构化面试和岗位分析能力"
+- "帮我学会计基础，不针对具体岗位"
+- "我想做制造业生产数据分析，先掌握设备停机和质量指标分析"
+
+岗位路线会组合相关专业模块；行业、职级和地区仅在会改变能力要求时纳入，不把通用模块复制成岗位专属版本。
 
 ## 设计理念
 
@@ -138,7 +91,7 @@ Skill 会先确认领域与预期能力，再结合基础生成结构；时间�
 
 ## 版本
 
-当前版本 **v2026.10.25**（版本规则：v+日期）
+当前版本 **v2026.10.25**
 
 `validate_skill.py` 的掌握证据检查基于叶子节点文本特征，只能发现明显缺项；通过不代表证据具体、充分或已获领域专家确认。
 

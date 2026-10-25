@@ -15,7 +15,7 @@
 
 ## 命名规则
 
-- **领域slug**：`<L1领域>-<细分>` 小写连字符，如 `ops-dba`、`dev-backend`。无细分时只用领域名。
+- **领域slug**：普通领域路线用 `<L1领域>-<细分>` 小写连字符，如 `ops-dba`、`dev-backend`；岗位/任务路线遇到同一主领域下的目录冲突时，可追加简短目标 slug，如 `dev-backend-data-analyst`。无细分时只用领域名。
 - **模块slug**：模块名英文化小写连字符，如 `innodb-storage`；无法英文化时用拼音。
 - **笔记文件**：`notes/<两位序号>-<模块slug>.md`，序号取 `roadmap.md` 模块表 `#` 列（重排联动规则见 `notes.md`）。
 
@@ -35,7 +35,9 @@
 | 字段 | 含义 |
 |---|---|
 | `schema_version` | 固定 1 |
-| `domain` / `subdomain` | 领域 / 细分 |
+| `domain` / `subdomain` | 主领域 / 主细分，用于目录定位；不表示跨领域路线的完整范围 |
+| `target_role` | 目标岗位/岗位族；无明确岗位目标时可省略或填 `不适用` |
+| `industry_context` | 目标行业或业务情境；仅在会改变能力结构时填写，否则可省略 |
 | `goal_level` | `aware`（了解）/ `usable`（能用）/ `master`（精通） |
 | `baseline` | 现有基础描述 |
 | `time_budget` | 每周可投入时长 |
@@ -57,6 +59,10 @@
 
 ## 一致性规则 [MUST]
 
+- `target_role` 与 `industry_context` 是可选字段；旧档案缺少它们仍可读取和续学，不要求批量迁移。
+- 跨领域岗位路线的完整模块清单只维护在 `knowledge-map.md` 与 `roadmap.md`；`profile.md` 记录目标和主领域，不重复维护模块列表。续学时综合目标岗位、任务和主领域匹配。
+- 同一用户有不同岗位或任务目标时，分别维护独立学习目录；不得因主领域相同而合并路线或覆盖原档案。
+- 不因路线完成、长期未更新或新目标出现而自动归档。用户明确要求归档时，将整目录移至 `./learning/archive/<slug>/` 并保留内部文件；默认续学匹配只检索 `./learning/` 下的活动目录，只有用户明确要恢复归档路线时才检索 `archive/`。
 - 写状态文件前确认路径与 schema_version 正确。
 - 同一信息只存一处（如模块状态只在 roadmap.md，笔记 frontmatter 的 `status` 与其保持同步）。
 - 发现两处不一致时，以 roadmap.md 为准修正另一处，并在 review-log.md 记录。

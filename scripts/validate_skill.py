@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""校验 Skill 的 L1/L2 路由、领域模块结构和知识骨架掌握证据。
+"""校验 Skill 的岗位/领域/行业路由、静态案例引用、模块结构和知识骨架掌握证据。
 
 用法: validate_skill.py [项目根目录，默认当前目录]
 退出码: 0=结构通过（允许内容警告），1=有结构错误
@@ -82,10 +82,20 @@ def main() -> int:
     errors, warns = [], []
     skill_file = root / "SKILL.md"
     domains_root = root / "references/domains"
+    role_routes_file = root / "references/core/role-routing.md"
+    industries_root = root / "references/industries"
+    industry_index = industries_root / "_index.md"
+    routing_evals = root / "docs/evals/role-routing.md"
     if not skill_file.is_file():
         errors.append("缺少 SKILL.md")
     if not domains_root.is_dir():
         errors.append("缺少 references/domains/")
+    if not role_routes_file.is_file():
+        errors.append("缺少 references/core/role-routing.md")
+    if not industry_index.is_file():
+        errors.append("缺少 references/industries/_index.md")
+    if not routing_evals.is_file():
+        errors.append("缺少 docs/evals/role-routing.md")
     if errors:
         for error in errors:
             print(f"[ERROR] {error}")
@@ -98,6 +108,25 @@ def main() -> int:
     for route in l1_routes:
         if not (root / route).is_file():
             errors.append(f"SKILL.md: L1 路由目标不存在: {route}")
+
+    routing_docs = [role_routes_file, industry_index, routing_evals]
+    routing_docs.extend(path for path in industries_root.glob("*.md") if path.name != "_index.md")
+    for doc in routing_docs:
+        text = doc.read_text(encoding="utf-8")
+        for route in re.findall(r"`((?:references/(?:domains|industries)/)[^`]+\.md)`", text):
+            if not (root / route).is_file():
+                errors.append(f"{doc}: 路由目标不存在: {route}")
+
+    for route in re.findall(r"`([^`/]+\.md)`", industry_index.read_text(encoding="utf-8")):
+        if not (industries_root / route).is_file():
+            errors.append(f"{industry_index}: 行业叠加目标不存在: {route}")
+    eval_text = routing_evals.read_text(encoding="utf-8")
+    case_definitions = eval_text.split("## 走查结果记录", 1)[0]
+    case_ids = re.findall(r"^\| (RR-\d+) \|", case_definitions, re.M)
+    if len(case_ids) < 5:
+        errors.append(f"{routing_evals}: 静态路由案例少于 5 个")
+    if len(case_ids) != len(set(case_ids)):
+        errors.append(f"{routing_evals}: 静态路由案例 ID 重复")
 
     indexes = sorted(domains_root.glob("*/_index.md"))
     for index in indexes:

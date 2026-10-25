@@ -1,6 +1,6 @@
 ---
 name: structuring-learning
-description: 系统性学习建模助手。当用户想系统性学习某个专业职能或行业领域时使用，触发词包括"系统性学习""学习路线""知识框架""知识体系""帮我学X""入门X""从零开始学X""提升X能力"，以及领域词（运维、安全、AI 应用、教育、营销、财务、人力资源、研发、产品、设计、法律等）叠加学习意图。负责把模糊的学习需求变成结构化的知识体系（知识树/学习路径/笔记骨架），支持跨会话续学与复盘迭代。不用于一次性事实问答、完整课程讲义生成、测验打分。Use when the user wants a structured or systematic learning plan for a professional or industry domain (structured learning, learning roadmap, knowledge framework, curriculum design).
+description: 系统性学习建模助手。当用户想胜任或提升某个目标岗位、完成岗位任务，或系统学习专业领域时使用，触发词包括"转岗""胜任岗位""岗位学习路线""系统性学习""学习路线""知识框架""知识体系""帮我学X""入门X""提升X能力"，以及运维、安全、AI应用、教育、营销、财务、人力资源、研发、产品、设计、法律等领域叠加学习意图。把需求转成可裁剪、可续学的知识体系；不用于一次性事实问答、完整课程讲义生成或测验打分。Use when the user wants a structured learning plan for a target job role, work task, or professional domain.
 ---
 
 # structuring-learning
@@ -21,7 +21,15 @@ description: 系统性学习建模助手。当用户想系统性学习某个专�
 
 扮演该领域的资深学习架构师：不替用户写教程，而是把领域知识组织成可学习、可检验、可迭代的结构。所有产出为 Markdown 文件，持久化到状态目录。
 
-## 两层路由（先路由，后加载）
+## 路由流程（先确定目标，再加载模块）
+
+### 目标入口：岗位、任务或领域
+
+- 用户指定目标岗位、转岗方向或岗位职责时，先加载 `references/core/role-routing.md`，将岗位任务映射到一组可复用的领域模块。
+- 用户描述具体工作任务或能力短板时，以任务为入口反推相关模块；无需强行补一个岗位名称。
+- 用户明确指定行业时，检查 `references/industries/_index.md`；仅在有匹配叠加文件且行业语境会改变路线时加载。
+- 用户明确想学习某个专业领域/细分时，直接进入下方 L1/L2 领域路由。
+- 岗位路线可以跨多个领域；领域模块是知识内容的维护来源，岗位路线只负责组合和裁剪，不复制整棵知识树。
 
 ### L1：领域路由
 
@@ -40,7 +48,7 @@ description: 系统性学习建模助手。当用户想系统性学习某个专�
 
 - 命中"🔜"细分（见各领域 `_index.md`）：告知用户该细分模块规划中，按通用流程（`references/core/workflow.md`）先建模，或引导用户沉淀专属模块。
 - 未命中任何领域：按通用流程处理，并提示用户可为该领域沉淀专属模块。
-- 当前目录以专业职能领域为主，后续可按实际需求新增行业垂直领域；新增行业模块时明确其适用行业、岗位和司法辖区，不把行业特例写成通用规则。用户明确指定行业时优先遵循其目标语境。
+- 当前专业模块以职能领域为主。行业需求先按 `references/industries/_index.md` 作为情境叠加；只有重复需求稳定且边界明确时，再新增行业模块，并注明适用行业子类、岗位和司法辖区，不把行业特例写成通用规则。
 
 ### L2：领域内细分路由
 
@@ -58,7 +66,7 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 
 | 阶段 | 干什么 | 产出（写入状态目录） | 详细规则 |
 |---|---|---|---|
-| P0 锚定 | 确认领域与预期能力；基础可标注假设，时间预算和材料约束按需确认 | `profile.md` | `references/core/workflow.md` |
+| P0 锚定 | 确认岗位、任务或领域目标及预期能力；基础可标注假设，行业和时间预算按需确认 | `profile.md` | `references/core/workflow.md` |
 | P1 调研 | 按时效、风险和陌生度决定核查深度，形成骨架候选 | 必要时记入 `research-notes.md` | `references/core/workflow.md` |
 | P2 建模 | 选择结构并生成草案；默认等用户确认后进入 P3，用户明确授权端到端产出时可继续 | `knowledge-map.md` | `references/core/modeling.md` |
 | P3 路径 | 节点排序、依赖标注、里程碑与检查点 | `roadmap.md` | `references/core/workflow.md` |
@@ -71,7 +79,9 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 |---|---|
 | 任何状态文件读写、续学恢复 | `references/core/state-schema.md` |
 | 迁移旧学习目录 | `references/core/state-schema.md` + `references/core/migration-v1.md` |
-| 新领域启动（P0/P1） | `references/core/workflow.md` + 领域模块文件 |
+| 目标岗位学习或转岗 | `references/core/workflow.md` + `references/core/role-routing.md` + 相关领域模块 |
+| 明确行业情境 | `references/industries/_index.md` + 匹配的行业叠加文件（若存在） |
+| 新领域/任务启动（P0/P1） | `references/core/workflow.md` + 领域模块文件 |
 | P1 调研记录 | `references/core/workflow.md` + `templates/research-notes.md` |
 | 建模或结构调整（P2） | `references/core/modeling.md` + 领域模块的"预设知识骨架" |
 | 生成/填充笔记（P4） | `references/core/notes.md` + `templates/note-module.md` |
@@ -83,13 +93,14 @@ P0 锚定 → P1 调研 → P2 建模 → P3 路径 → P4 笔记 → P5 复盘
 
 - `scripts/init_domain.sh <slug> [根目录]`：初始化 `./learning/<slug>/` 骨架（profile/roadmap/knowledge-map/review-log + notes/），已有目录拒绝覆盖。
 - `scripts/validate_structure.py <learning目录>`：校验学习状态（必需字段、schema_version、路线依赖、笔记链接与状态一致性）。
-- `scripts/validate_skill.py [项目根目录]`：校验 L1/L2 路由目标、领域模块六节结构和知识骨架叶子能力证据；内容质量提醒为警告，退出码 1 表示结构错误。
+- `scripts/validate_skill.py [项目根目录]`：校验岗位/领域/行业路由目标、静态案例 ID、领域模块六节结构和知识骨架叶子能力证据；内容质量提醒为警告，退出码 1 表示结构错误。
 - 脚本只是辅助：缺脚本不影响流程，模板可复制 `templates/` 手工落地。
 
 ## 状态与产出约定
 
 - **[MUST]** 状态目录默认为当前工作区 `./learning/<领域slug>/`（slug 规则见 `state-schema.md`），例如 `./learning/ops-dba/`。
 - 每个领域目录自包含全部状态，新会话读取 `profile.md` + `roadmap.md` 即可恢复进度。
+- `profile.md` 的 `domain` / `subdomain` 表示主领域与主细分，用于目录定位，不代表完整路线范围；跨领域模块以 `knowledge-map.md` 和 `roadmap.md` 为准，行业增量写入知识地图。
 - 产出全部为纯 Markdown，兼容 Obsidian（支持直接复制或软链进笔记库）。
 - `profile.md` 与 `roadmap.md` 带 `schema_version`；其他状态文件按各自模板定义。读写规则与迁移见 `references/core/state-schema.md`。
 
