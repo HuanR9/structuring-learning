@@ -2,12 +2,12 @@
 
 > 学习链路的"建模层"——把"我要学 X"变成结构良好、可续学、可沉淀的知识体系。
 
-一个面向 AI Agent 的技能（Skill / SKILL.md 格式）：当你说"帮我系统性学习 X"时，它不会直接扔给你一份课程，而是先带你完成**知识结构建模**——产出知识树、学习路径、结构化笔记与复盘机制，全部落为纯 Markdown，可直接进 Obsidian 等知识库长期维护。
+一个遵循开放 [Agent Skills](https://agentskills.io/specification) 规范的 AI Agent 技能：当你说"帮我系统性学习 X"时，它不会直接扔给你一份课程，而是先带你完成**知识结构建模**——产出知识树、学习路径、结构化笔记与复盘机制，全部落为纯 Markdown，可直接进 Obsidian 等知识库长期维护。
 
 ## 核心特性
 
-- **领域模块化路由**：触发词 → L1 业务领域（运维/研发/产品/设计/法律）→ L2 细分方向，每域独立维护、独立触发
-- **预置知识骨架**：22 个细分模块各带预设知识骨架，叶子节点标注可观察的能力证据（如何判断掌握），不从零起步
+- **领域模块化路由**：触发词 → L1 专业领域或行业领域 → L2 细分方向，每域独立维护、独立触发
+- **预置知识骨架**：34 个细分模块各带预设知识骨架，叶子节点标注可观察的能力证据（如何判断掌握），不从零起步
 - **分级信源清单**：每个模块配权威信源（官方文档 > 经典书籍 > 优质社区）
 - **六阶段流水线**：锚定 → 调研 → 建模 → 路径 → 笔记 → 复盘，复盘结果可回写修正知识结构（迭代闭环）
 - **可续学状态**：每个学习领域一套自包含状态文件（档案/知识地图/路径/笔记），schema 版本化，新会话读档案即恢复进度
@@ -19,7 +19,12 @@
 | 领域 | 细分模块 |
 |---|---|
 | 运维 ops | DBA · SRE · 系统运维 · 网络运维 · 容器与云原生 |
-| 研发 dev | 后端 · 前端 · 移动 · 测试工程 · 架构设计 |
+| 安全 security | 应用安全 · 云与容器安全 · 安全运营与事件响应 |
+| 研发 dev | 后端 · 前端 · 移动 · 测试工程 · 架构设计 · AI 应用工程 |
+| 教育与培训 education | 教学设计 · 教学与评估 |
+| 市场与销售 marketing-sales | 市场与营销 · 销售 |
+| 财务与会计 finance | 会计与财务报告 · 财务分析与企业财务 |
+| 人力资源与组织 people | 招聘与选拔 · 人才与组织发展 |
 | 产品 product | 产品经理核心 · B端产品 · 数据分析 · 增长产品 |
 | 设计 design | UI/UX · 视觉 · 动效 · 设计系统 |
 | 法律 legal | 合同法务 · 劳动用工 · 数据合规 · 公司与投融资 |
@@ -40,7 +45,8 @@ structuring-learning/
 │   │   ├── state-schema.md         #   状态文件 schema 与版本号
 │   │   └── migration-v1.md         #   旧学习目录迁移说明
 │   └── domains/                    # 领域模块注册处
-│       ├── ops/  dev/  product/  design/  legal/
+│       ├── ops/  security/  dev/  education/  marketing-sales/  finance/  people/
+│       ├── product/  design/  legal/
 ├── templates/                      # 产出物模板（档案/调研记录/知识地图/路径/模块笔记）
 └── scripts/
     ├── init_domain.sh              # 初始化一个学习领域目录骨架
@@ -51,23 +57,66 @@ structuring-learning/
 
 ## 安装
 
-**WorkBuddy**（本项目即为此开发）：
+本项目的 `SKILL.md` 和配套 `references/`、`scripts/`、`templates/` 遵循 Agent Skills 的目录约定。Agent 是否能使用它，还取决于该 Agent 是否支持此规范，以及它从哪里发现技能：**格式可复用，安装目录和自动发现能力由各工具决定**。对未列出的 Agent，请查阅其官方文档，将完整目录放到它支持的 skills 位置；不能仅凭存在 `SKILL.md` 就假设工具会自动加载。
+
+以下是已提供 Agent Skills 支持的工具的常用安装位置。把仓库完整克隆到目标目录后，`SKILL.md` 应直接位于 `structuring-learning/` 下。
+
+| Agent | 用户级安装位置 | 项目级安装位置 | 官方说明 |
+|---|---|---|---|
+| Codex | `~/.agents/skills/structuring-learning/` | `<项目>/.agents/skills/structuring-learning/` | [Codex Skills](https://developers.openai.com/codex/skills) |
+| Claude Code | `~/.claude/skills/structuring-learning/` | `<项目>/.claude/skills/structuring-learning/` | [Claude Code Skills](https://code.claude.com/docs/en/skills) |
+| Gemini CLI | `~/.agents/skills/structuring-learning/`（也支持 `~/.gemini/skills/`） | `<项目>/.agents/skills/structuring-learning/`（也支持 `.gemini/skills/`） | [Gemini CLI Agent Skills](https://geminicli.com/docs/cli/skills/) |
+
+例如，在 macOS/Linux 上安装到 Codex 和 Gemini CLI 共用的用户级目录：
 
 ```bash
-# 方式一：从 GitHub 克隆后同步
-git clone https://github.com/HuanR9/structuring-learning.git
-cp -r structuring-learning ~/.workbuddy/skills/
-# 或先预览同步差异，再明确执行：
+mkdir -p ~/.agents/skills
+git clone https://github.com/HuanR9/structuring-learning.git \
+  ~/.agents/skills/structuring-learning
+```
+
+安装到 Claude Code 用户级目录：
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/HuanR9/structuring-learning.git \
+  ~/.claude/skills/structuring-learning
+```
+
+项目级安装适合团队共享并纳入版本控制。在目标项目根目录执行对应命令：
+
+```bash
+# Codex 或 Gemini CLI
+mkdir -p .agents/skills
+git clone https://github.com/HuanR9/structuring-learning.git \
+  .agents/skills/structuring-learning
+
+# Claude Code
+mkdir -p .claude/skills
+git clone https://github.com/HuanR9/structuring-learning.git \
+  .claude/skills/structuring-learning
+```
+
+更新时进入技能目录运行 `git pull`。工具通常会自动发现或在新会话加载技能；若未出现，请按对应工具文档检查目录并重启会话。
+
+### WorkBuddy
+
+WorkBuddy 使用自己的用户级目录，可直接克隆：
+
+```bash
+mkdir -p ~/.workbuddy/skills
+git clone https://github.com/HuanR9/structuring-learning.git \
+  ~/.workbuddy/skills/structuring-learning
+```
+
+如果已将仓库克隆到其他位置，也可以使用仓库内的同步脚本：先预览差异，再明确应用：
+
+```bash
 ./scripts/sync-to-workbuddy.sh
 ./scripts/sync-to-workbuddy.sh --apply
-
-# 方式二：直接 clone 到用户级 skills 目录
-git clone https://github.com/HuanR9/structuring-learning.git ~/.workbuddy/skills/structuring-learning
 ```
 
 `--apply` 默认保留目标目录中本仓库没有的文件并保护 `learning/`；只有明确要清理目标独有文件时才加 `--prune`。
-
-**其他 Agent**（Claude Code 等，SKILL.md 格式通用）：将整个目录放入对应工具的 skills 目录即可。
 
 ## 使用方式
 
